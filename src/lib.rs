@@ -1,21 +1,33 @@
 use std::collections::HashMap;
 
-pub struct Cacher<T>
-where T: Fn(usize) -> usize {
+pub struct Cacher<T, U, V>
+where
+	T: Fn(U) -> V,
+	U: std::cmp::Eq,
+	U: std::hash::Hash,
+	U: std::marker::Copy,
+	V: std::marker::Copy
+{
 	closure: T,
-	values: HashMap<usize, usize>,
+	values: HashMap<U, V>,
 }
 
-impl<T> Cacher<T>
-where T: Fn(usize) -> usize {
-	pub fn new(closure: T) -> Cacher<T> {
+impl<T, U, V> Cacher<T, U, V>
+where 
+	T: Fn(U) -> V,
+	U: std::cmp::Eq,
+	U: std::hash::Hash,
+	U: std::marker::Copy,
+	V: std::marker::Copy
+{
+	pub fn new(closure: T) -> Cacher<T, U, V> {
 		Cacher {
 			closure,
 			values: HashMap::new(),
 		}
 	}
 	
-	pub fn value(&mut self, arg: usize) -> usize {
+	pub fn value(&mut self, arg: U) -> V {
 		match self.values.get(&arg) {
 			Some(v) => *v,
 			None => {
